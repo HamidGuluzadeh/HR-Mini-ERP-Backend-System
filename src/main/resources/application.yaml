@@ -1,3 +1,30 @@
 spring:
   application:
     name: hr-erp
+
+  datasource:
+    url: jdbc:postgresql://localhost:${POSTGRES_PORT}/hr_erp_db
+    username: postgres
+    password: postgres_password
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db-changelog-master.yaml
+    contexts: dev
+    drop-first: false
+    database-change-log-table: DATABASECHANGELOG
+    database-change-log-lock-table: DATABASECHANGELOGLOCK
+
+server:
+  port: 8080
+  servlet:
+    context-path: /hr-erp
