@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   postgres:
-    image: postgres:18
+    image: postgres:17.11
     container_name: hr_erp_postgres
     environment:
       POSTGRES_DB: ${POSTGRES_DB}

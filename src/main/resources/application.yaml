@@ -4,8 +4,8 @@ spring:
 
   datasource:
     url: jdbc:postgresql://localhost:${POSTGRES_PORT}/hr_erp_db
-    username: postgres
-    password: postgres_password
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -25,6 +25,6 @@ spring:
     database-change-log-lock-table: DATABASECHANGELOGLOCK
 
 server:
-  port: 8080
+  port: ${SERVER_PORT}
   servlet:
     context-path: /hr-erp
