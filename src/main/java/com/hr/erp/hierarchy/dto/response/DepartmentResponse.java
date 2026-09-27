@@ -1,4 +1,4 @@
-package com.hr.erp.hierarchy.dto;
+package com.hr.erp.hierarchy.dto.response;
 
 import lombok.Builder;
 

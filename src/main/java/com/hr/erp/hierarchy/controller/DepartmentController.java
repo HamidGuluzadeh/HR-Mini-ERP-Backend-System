@@ -1,8 +1,8 @@
 package com.hr.erp.hierarchy.controller;
 
 import com.hr.erp.common.dto.SuccessDto;
-import com.hr.erp.hierarchy.dto.DepartmentRequest;
-import com.hr.erp.hierarchy.dto.DepartmentResponse;
+import com.hr.erp.hierarchy.dto.request.DepartmentRequest;
+import com.hr.erp.hierarchy.dto.response.DepartmentResponse;
 import com.hr.erp.hierarchy.service.DepartmentService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

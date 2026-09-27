@@ -1,7 +1,7 @@
 package com.hr.erp.hierarchy.service;
 
-import com.hr.erp.hierarchy.dto.DepartmentRequest;
-import com.hr.erp.hierarchy.dto.DepartmentResponse;
+import com.hr.erp.hierarchy.dto.request.DepartmentRequest;
+import com.hr.erp.hierarchy.dto.response.DepartmentResponse;
 import org.springframework.data.domain.Page;
 
 public interface DepartmentService {

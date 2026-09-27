@@ -1,11 +1,10 @@
 package com.hr.erp.hierarchy.service.implement;
 
-import com.hr.erp.common.exception.BadRequestException;
 import com.hr.erp.common.exception.ConflictException;
 import com.hr.erp.common.exception.ResourceAlreadyExistsException;
 import com.hr.erp.common.exception.ResourceNotFoundException;
-import com.hr.erp.hierarchy.dto.DepartmentRequest;
-import com.hr.erp.hierarchy.dto.DepartmentResponse;
+import com.hr.erp.hierarchy.dto.request.DepartmentRequest;
+import com.hr.erp.hierarchy.dto.response.DepartmentResponse;
 import com.hr.erp.hierarchy.entity.Department;
 import com.hr.erp.hierarchy.exception.DepartmentNotFoundException;
 import com.hr.erp.hierarchy.mapper.DepartmentMapper;

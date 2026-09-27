@@ -1,7 +1,7 @@
 package com.hr.erp.hierarchy.mapper;
 
-import com.hr.erp.hierarchy.dto.DepartmentRequest;
-import com.hr.erp.hierarchy.dto.DepartmentResponse;
+import com.hr.erp.hierarchy.dto.request.DepartmentRequest;
+import com.hr.erp.hierarchy.dto.response.DepartmentResponse;
 import com.hr.erp.hierarchy.entity.Department;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
