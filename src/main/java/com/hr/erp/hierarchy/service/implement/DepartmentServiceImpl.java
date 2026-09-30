@@ -6,9 +6,9 @@ import com.hr.erp.common.exception.ResourceNotFoundException;
 import com.hr.erp.hierarchy.dto.request.DepartmentRequest;
 import com.hr.erp.hierarchy.dto.response.DepartmentResponse;
 import com.hr.erp.hierarchy.entity.Department;
-import com.hr.erp.hierarchy.exception.DepartmentNotFoundException;
 import com.hr.erp.hierarchy.mapper.DepartmentMapper;
 import com.hr.erp.hierarchy.repository.DepartmentRepository;
+import com.hr.erp.hierarchy.repository.PositionRepository;
 import com.hr.erp.hierarchy.service.DepartmentService;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
@@ -26,6 +26,7 @@ import java.util.Objects;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class DepartmentServiceImpl implements DepartmentService {
     DepartmentRepository departmentRepository;
+    PositionRepository positionRepository;
     DepartmentMapper departmentMapper;
 
     @Override
@@ -101,6 +102,14 @@ public class DepartmentServiceImpl implements DepartmentService {
     public void deleteDepartment(String departmentId) {
         if (!departmentRepository.existsById(departmentId)) {
             throw new ResourceNotFoundException("Department not found!");
+        }
+
+        if (departmentRepository.existsByParentId(departmentId)) {
+            throw new ConflictException("Department contains sub-departments!");
+        }
+
+        if (positionRepository.existsByDepartmentId(departmentId)) {
+            throw new ConflictException("Department has associated positions!");
         }
 
         departmentRepository.deleteById(departmentId);

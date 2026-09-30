@@ -1,4 +1,4 @@
-package com.hr.erp.employee.dto;
+package com.hr.erp.employee.dto.request;
 
 import com.hr.erp.common.enums.EmployeeStatus;
 import jakarta.validation.constraints.Email;

@@ -1,8 +1,10 @@
 package com.hr.erp.hierarchy.service.implement;
 
 import com.hr.erp.common.exception.BadRequestException;
+import com.hr.erp.common.exception.ConflictException;
 import com.hr.erp.common.exception.ResourceAlreadyExistsException;
 import com.hr.erp.common.exception.ResourceNotFoundException;
+import com.hr.erp.employee.repository.EmployeeRepository;
 import com.hr.erp.hierarchy.dto.request.PositionRequest;
 import com.hr.erp.hierarchy.dto.response.PositionResponse;
 import com.hr.erp.hierarchy.entity.Department;
@@ -26,6 +28,7 @@ import org.springframework.stereotype.Service;
 public class PositionServiceImpl implements PositionService {
     DepartmentRepository departmentRepository;
     PositionRepository positionRepository;
+    EmployeeRepository employeeRepository;
     PositionMapper positionMapper;
 
     @Override
@@ -112,6 +115,10 @@ public class PositionServiceImpl implements PositionService {
     public void deletePosition(String positionId) {
         if (!positionRepository.existsById(positionId)) {
             throw new ResourceNotFoundException("Position not found!");
+        }
+
+        if (employeeRepository.existsByPositionId(positionId)) {
+            throw new ConflictException("Position is currently assigned to employee(s)!");
         }
 
         positionRepository.deleteById(positionId);

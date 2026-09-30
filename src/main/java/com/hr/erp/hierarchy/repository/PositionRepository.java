@@ -15,4 +15,6 @@ public interface PositionRepository extends JpaRepository<Position, String> {
 
     boolean existsByTitleAndDepartmentIdAndIdNot(String title, String departmentId, String id);
 
+    boolean existsByDepartmentId(String departmentId);
+
 }

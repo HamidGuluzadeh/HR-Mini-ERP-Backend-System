@@ -1,4 +1,4 @@
-package com.hr.erp.employee.dto;
+package com.hr.erp.employee.dto.response;
 
 import com.hr.erp.common.enums.EmployeeStatus;
 import lombok.Builder;
