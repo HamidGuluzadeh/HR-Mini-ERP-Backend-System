@@ -11,6 +11,12 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
 
     boolean existsByPositionId(String positionId);
 
+    boolean existsByPhoneNumber(String phoneNumber);
+
+    boolean existsByPhoneNumberAndIdNot(String phoneNumber, String employeeId);
+
+    boolean existsByManagerId(String managerId);
+
     Page<Employee> findAllByPositionDepartmentId(String departmentId, Pageable pageable);
 
 }
