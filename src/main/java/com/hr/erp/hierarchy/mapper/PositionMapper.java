@@ -12,7 +12,6 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 public interface PositionMapper {
 
     @Mapping(target = "departmentId", source = "department.id")
-    @Mapping(target = "departmentName", source = "department.name")
     PositionResponse mapEntityToResponse(Position position);
 
     @Mapping(target = "id", ignore = true)

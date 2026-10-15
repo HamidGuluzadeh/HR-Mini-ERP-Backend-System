@@ -1,6 +1,5 @@
 package com.hr.erp.common.exception;
 
-import com.hr.erp.hierarchy.exception.DepartmentNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
