@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: 010-add-audit-columns-to-attendance-2026-10-16
+      author: Hamid Guluzadeh
+      changes:
+        - addColumn:
+            tableName: attendance
+            columns:
+              - column:
+                  name: created_by
+                  type: VARCHAR(36)
+                  defaultValue: "SYSTEM"
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: TIMESTAMPTZ
+
+              - column:
+                  name: updated_by
+                  type: VARCHAR(36)

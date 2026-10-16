@@ -5,6 +5,7 @@ import com.hr.erp.employee.entity.Employee;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -42,4 +43,14 @@ public class Attendance {
 
     @Column(name = "created_at", nullable = false, updatable = false)
     Instant createdAt;
+
+    @Column(name = "created_by", nullable = false, updatable = false)
+    String createdBy;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    Instant updatedAt;
+
+    @Column(name = "updated_by")
+    String updatedBy;
 }
