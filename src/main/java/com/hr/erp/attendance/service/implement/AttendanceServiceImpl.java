@@ -9,7 +9,6 @@ import com.hr.erp.attendance.service.AttendanceService;
 import com.hr.erp.common.enums.AttendanceStatus;
 import com.hr.erp.common.enums.EmployeeStatus;
 import com.hr.erp.common.exception.BadRequestException;
-import com.hr.erp.common.exception.ConflictException;
 import com.hr.erp.common.exception.ResourceAlreadyExistsException;
 import com.hr.erp.common.exception.ResourceNotFoundException;
 import com.hr.erp.employee.entity.Employee;
@@ -18,16 +17,12 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.util.Objects;
 
 @Service
@@ -97,7 +92,7 @@ public class AttendanceServiceImpl implements AttendanceService {
             throw new BadRequestException("Employee has already been terminated!");
         }
 
-        if (attendanceRepository.existsByEmployeeIdAndWorkDate(employeeId, LocalDate.now())) {
+        if (attendanceRepository.existsByEmployeeIdAndWorkDate(employeeId, LocalDate.now(COMPANY_ZONE_ID))) {
             throw new ResourceAlreadyExistsException("Employee has already been checked in today!");
         }
 
@@ -107,7 +102,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 
         Attendance attendance = Attendance.builder()
                 .employee(employee)
-                .workDate(LocalDate.now())
+                .workDate(LocalDate.now(COMPANY_ZONE_ID))
                 .checkIn(now)
                 .status(attendanceStatus)
                 .createdAt(now)
@@ -137,6 +132,17 @@ public class AttendanceServiceImpl implements AttendanceService {
         }
 
         attendance.setCheckOut(Instant.now());
+        attendance.setUpdatedAt(Instant.now());
+        attendance.setUpdatedBy("SYSTEM");
+
+        if (!Objects.isNull(attendance.getCheckIn())) {
+            long workedHours = Duration.between(attendance.getCheckIn(), attendance.getCheckOut()).toHours();
+            LocalTime checkOutLocalTime = attendance.getCheckOut().atZone(COMPANY_ZONE_ID).toLocalTime();
+
+            if (workedHours < 5 || checkOutLocalTime.isBefore(EARLY_LEAVE_THRESHOLD)) {
+                attendance.setStatus(AttendanceStatus.HALF_DAY);
+            }
+        }
 
         Attendance savedAttendance = attendanceRepository.save(attendance);
 
@@ -174,6 +180,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 
         attendance.setEmployee(employee);
         attendance.setCreatedAt(Instant.now());
+        attendance.setCreatedBy("ADMIN");
 
         Attendance savedAttendance = attendanceRepository.save(attendance);
 
@@ -210,6 +217,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         attendanceMapper.updateEntityFromRequest(request, attendance);
         attendance.setEmployee(employee);
         attendance.setUpdatedAt(Instant.now());
+        attendance.setUpdatedBy("ADMIN");
 
         Attendance savedAttendance = attendanceRepository.save(attendance);
 
