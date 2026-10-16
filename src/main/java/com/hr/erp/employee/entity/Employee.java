@@ -1,6 +1,6 @@
 package com.hr.erp.employee.entity;
 
-import com.hr.erp.common.enums.EmployeeStatus;
+import com.hr.erp.employee.model.EmployeeStatus;
 import com.hr.erp.hierarchy.entity.Position;
 import jakarta.persistence.*;
 import lombok.*;

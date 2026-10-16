@@ -1,6 +1,6 @@
 package com.hr.erp.attendance.dto.request;
 
-import com.hr.erp.common.enums.AttendanceStatus;
+import com.hr.erp.attendance.model.AttendanceStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;

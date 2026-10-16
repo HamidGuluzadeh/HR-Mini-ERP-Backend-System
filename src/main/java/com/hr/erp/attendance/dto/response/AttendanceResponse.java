@@ -1,6 +1,6 @@
 package com.hr.erp.attendance.dto.response;
 
-import com.hr.erp.common.enums.AttendanceStatus;
+import com.hr.erp.attendance.model.AttendanceStatus;
 import lombok.Builder;
 
 import java.time.Instant;

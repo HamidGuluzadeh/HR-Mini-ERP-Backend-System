@@ -1,6 +1,6 @@
 package com.hr.erp.employee.service.implement;
 
-import com.hr.erp.common.enums.EmployeeStatus;
+import com.hr.erp.employee.model.EmployeeStatus;
 import com.hr.erp.common.exception.BadRequestException;
 import com.hr.erp.common.exception.ConflictException;
 import com.hr.erp.common.exception.ResourceAlreadyExistsException;

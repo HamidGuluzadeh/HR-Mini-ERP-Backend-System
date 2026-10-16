@@ -1,6 +1,6 @@
 package com.hr.erp.attendance.entity;
 
-import com.hr.erp.common.enums.AttendanceStatus;
+import com.hr.erp.attendance.model.AttendanceStatus;
 import com.hr.erp.employee.entity.Employee;
 import jakarta.persistence.*;
 import lombok.*;

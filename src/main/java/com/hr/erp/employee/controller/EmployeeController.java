@@ -1,7 +1,7 @@
 package com.hr.erp.employee.controller;
 
 import com.hr.erp.common.dto.SuccessDto;
-import com.hr.erp.common.enums.EmployeeStatus;
+import com.hr.erp.employee.model.EmployeeStatus;
 import com.hr.erp.common.enums.SuccessStatus;
 import com.hr.erp.employee.dto.request.EmployeeRequest;
 import com.hr.erp.employee.dto.response.EmployeeResponse;

@@ -1,6 +1,6 @@
 package com.hr.erp.employee.dto.response;
 
-import com.hr.erp.common.enums.EmployeeStatus;
+import com.hr.erp.employee.model.EmployeeStatus;
 import lombok.Builder;
 
 import java.time.Instant;

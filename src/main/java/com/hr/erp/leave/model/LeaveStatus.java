@@ -1,4 +1,4 @@
-package com.hr.erp.common.enums;
+package com.hr.erp.leave.model;
 
 public enum LeaveStatus {
     PENDING,

@@ -1,6 +1,6 @@
 package com.hr.erp.employee.service;
 
-import com.hr.erp.common.enums.EmployeeStatus;
+import com.hr.erp.employee.model.EmployeeStatus;
 import com.hr.erp.employee.dto.request.EmployeeRequest;
 import com.hr.erp.employee.dto.response.EmployeeResponse;
 import org.springframework.data.domain.Page;
