@@ -23,9 +23,8 @@ public class LeaveTypeEntity {
     @Column(name = "id", nullable = false, updatable = false)
     String id;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "name", length = 50, nullable = false)
-    LeaveType name;
+    String name;
 
     @Column(name = "max_days_per_year", nullable = false)
     Integer maxDaysPerYear;
