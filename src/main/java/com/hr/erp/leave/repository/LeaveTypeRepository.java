@@ -7,4 +7,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface LeaveTypeRepository extends JpaRepository<LeaveTypeEntity, String> {
 
+    boolean existsByNameIgnoreCase(String name);
+
+    boolean existsByNameIgnoreCaseAndIdNot(String name, String id);
+
 }
