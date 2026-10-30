@@ -1,6 +1,5 @@
 package com.hr.erp.leave.service.implement;
 
-import com.hr.erp.common.exception.ConflictException;
 import com.hr.erp.common.exception.ResourceAlreadyExistsException;
 import com.hr.erp.common.exception.ResourceNotFoundException;
 import com.hr.erp.leave.dto.request.CreateLeaveTypeRequestDto;
@@ -11,14 +10,18 @@ import com.hr.erp.leave.mapper.LeaveTypeMapper;
 import com.hr.erp.leave.repository.LeaveTypeRepository;
 import com.hr.erp.leave.service.LeaveTypeService;
 import jakarta.transaction.Transactional;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class LeaveTypeServiceImpl implements LeaveTypeService {
     LeaveTypeRepository leaveTypeRepository;
     LeaveTypeMapper leaveTypeMapper;

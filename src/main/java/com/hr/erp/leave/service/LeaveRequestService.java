@@ -11,7 +11,7 @@ public interface LeaveRequestService {
 
     Page<LeaveResponseDto> getLeaveRequestsByEmployee(String employeeId, int page, int size);
 
-    LeaveResponseDto getLeaveResponseById(String leaveRequestId);
+    LeaveResponseDto getLeaveRequestById(String leaveRequestId);
 
     LeaveResponseDto createLeaveRequest(CreateLeaveRequestDto request);
 
