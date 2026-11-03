@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 011-delete-username-column-from-users-table-2026-11-03
+      author: Hamid Guluzadeh
+      changes:
+        - dropColumn:
+            tableName: users
+            columnName: username

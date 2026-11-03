@@ -1,0 +1,91 @@
+databaseChangeLog:
+  - changeSet:
+      id: 012-add-audit-columns-to-tables-2026-11-03
+      author: Hamid Guluzadeh
+      changes:
+        - addColumn:
+            tableName: departments
+            columns:
+              - column:
+                  name: created_by
+                  type: VARCHAR(36)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_by
+                  type: VARCHAR(36)
+
+        - addColumn:
+            tableName: positions
+            columns:
+              - column:
+                  name: created_by
+                  type: VARCHAR(36)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_by
+                  type: VARCHAR(36)
+
+        - addColumn:
+            tableName: employees
+            columns:
+              - column:
+                  name: created_by
+                  type: VARCHAR(36)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_by
+                  type: VARCHAR(36)
+
+        - addColumn:
+            tableName: leave_types
+            columns:
+              - column:
+                  name: created_by
+                  type: VARCHAR(36)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_by
+                  type: VARCHAR(36)
+
+        - addColumn:
+            tableName: leave_requests
+            columns:
+              - column:
+                  name: created_by
+                  type: VARCHAR(36)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_by
+                  type: VARCHAR(36)
+
+        - addColumn:
+            tableName: attendance
+            columns:
+              - column:
+                  name: created_by
+                  type: VARCHAR(36)
+                  constraints:
+                    nullable: false
+
+        - addColumn:
+            tableName: payrolls
+            columns:
+              - column:
+                  name: created_by
+                  type: VARCHAR(36)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_by
+                  type: VARCHAR(36)
