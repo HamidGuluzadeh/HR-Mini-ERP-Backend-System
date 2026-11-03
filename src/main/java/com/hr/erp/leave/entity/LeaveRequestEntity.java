@@ -57,7 +57,13 @@ public class LeaveRequestEntity {
     @Column(name = "created_at", nullable = false, updatable = false)
     Instant createdAt;
 
+    @Column(name = "created_by", length = 36, nullable = false, updatable = false)
+    String createdBy;
+
     @UpdateTimestamp
     @Column(name = "updated_at")
     Instant updatedAt;
+
+    @Column(name = "updated_by", length = 36)
+    String updatedBy;
 }
