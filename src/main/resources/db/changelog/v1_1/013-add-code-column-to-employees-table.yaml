@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 013-add-code-column-to-employees-table-2026-11-04
+      author: Hamid Guluzadeh
+      changes:
+        - addColumn:
+            tableName: employees
+            columns:
+              - column:
+                  name: employee_code
+                  type: VARCHAR(10)
+                  constraints:
+                    nullable: false
+                    unique: true
