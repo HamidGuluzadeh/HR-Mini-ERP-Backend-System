@@ -1,6 +1,7 @@
 package com.hr.erp.auth.entity;
 
 import com.hr.erp.auth.model.UserRole;
+import com.hr.erp.auth.model.UserStatus;
 import com.hr.erp.employee.entity.Employee;
 import jakarta.persistence.*;
 import lombok.*;
@@ -32,8 +33,12 @@ public class User {
     @Column(name = "role", length = 30, nullable = false)
     UserRole role;
 
-    @Column(name = "is_active", nullable = false)
-    Boolean isActive;
+    @Column(name = "password_hash", nullable = false)
+    String passwordHash;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = 20, nullable = false)
+    UserStatus status;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

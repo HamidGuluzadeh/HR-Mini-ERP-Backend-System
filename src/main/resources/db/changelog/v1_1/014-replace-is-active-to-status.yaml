@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: 014-replace-is-active-to-status-2026-11-04
+      author: Hamid Guluzadeh
+      changes:
+        - dropColumn:
+            tableName: users
+            columnName: is_active
+
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false

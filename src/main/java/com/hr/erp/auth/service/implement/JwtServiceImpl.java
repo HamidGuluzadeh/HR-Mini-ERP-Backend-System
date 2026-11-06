@@ -8,6 +8,7 @@ import com.hr.erp.config.jwt.JwtProperties;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -57,6 +58,7 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
+    @Transactional
     public String generateRefreshToken(User user) {
         Instant now = Instant.now();
         Instant expiry = now.plus(jwtProperties.refreshToken().expirationDays(), ChronoUnit.DAYS);
