@@ -73,7 +73,7 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new UnauthorizedException("Invalid refresh token!"));
 
         if (!Objects.isNull(refreshTokenEntity.getRevokedAt()) || refreshTokenEntity.getExpiryDate().isBefore(Instant.now())) {
-            throw new BadRequestException("Bu token istifadəyə yararsızdır! Yenidən giriş edin");
+            throw new BadRequestException("Refresh token was revoked! Try to log in again");
         }
 
         User user = refreshTokenEntity.getUser();

@@ -38,7 +38,7 @@ public class Employee {
     String phoneNumber;
 
     @Column(name = "employee_code", length = 10, nullable = false, unique = true)
-    String employeeCode;
+    String code;
 
     @Column(name = "hire_date", nullable = false)
     LocalDate hireDate;
