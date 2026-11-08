@@ -3,7 +3,7 @@ spring:
     name: hr-erp
 
   datasource:
-    url: jdbc:postgresql://localhost:${POSTGRES_PORT}/hr_erp_db
+    url: ${POSTGRES_URL}
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver

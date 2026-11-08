@@ -46,9 +46,8 @@ public class LeaveRequestEntity {
     @Column(name = "status", length = 20, nullable = false)
     LeaveStatus status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "approved_by", referencedColumnName = "id")
-    Employee approvedBy;
+    @Column(name = "approved_by", length = 36)
+    String approvedBy;
 
     @Column(name = "reason", length = 500)
     String reason;

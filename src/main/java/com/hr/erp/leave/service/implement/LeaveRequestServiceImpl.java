@@ -22,6 +22,8 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -73,6 +75,9 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     @Override
     @Transactional
     public LeaveResponseDto createLeaveRequest(CreateLeaveRequestDto request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userId = auth != null ? auth.getName() : "SYSTEM";
+
         Employee employee = employeeRepository.findById(request.employeeId())
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found!"));
 
@@ -109,6 +114,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         leaveRequestEntity.setTotalDays(requestedDays);
         leaveRequestEntity.setStatus(LeaveStatus.PENDING);
         leaveRequestEntity.setCreatedAt(Instant.now());
+        leaveRequestEntity.setCreatedBy(userId);
 
         LeaveRequestEntity savedLeaveEntity = leaveRequestRepository.save(leaveRequestEntity);
 
@@ -118,6 +124,9 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     @Override
     @Transactional
     public LeaveResponseDto approveLeaveRequest(String leaveRequestId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userId = auth != null ? auth.getName() : "SYSTEM";
+
         LeaveRequestEntity leaveRequestEntity = leaveRequestRepository.findById(leaveRequestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Leave request not found!"));
 
@@ -127,6 +136,8 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         }
 
         leaveRequestEntity.setStatus(LeaveStatus.APPROVED);
+        leaveRequestEntity.setApprovedBy(userId);
+        leaveRequestEntity.setUpdatedBy(userId);
         leaveRequestEntity.setUpdatedAt(Instant.now());
 
         LeaveRequestEntity savedLeaveEntity = leaveRequestRepository.save(leaveRequestEntity);
@@ -137,6 +148,9 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     @Override
     @Transactional
     public LeaveResponseDto rejectLeaveRequest(String leaveRequestId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userId = auth != null ? auth.getName() : "SYSTEM";
+
         LeaveRequestEntity leaveRequestEntity = leaveRequestRepository.findById(leaveRequestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Leave request not found!"));
 
@@ -147,6 +161,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
 
         leaveRequestEntity.setStatus(LeaveStatus.REJECTED);
         leaveRequestEntity.setUpdatedAt(Instant.now());
+        leaveRequestEntity.setUpdatedBy(userId);
 
         LeaveRequestEntity savedLeaveEntity = leaveRequestRepository.save(leaveRequestEntity);
 
@@ -156,6 +171,9 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     @Override
     @Transactional
     public LeaveResponseDto cancelLeaveRequest(String leaveRequestId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userId = auth != null ? auth.getName() : "SYSTEM";
+
         LeaveRequestEntity leaveRequestEntity = leaveRequestRepository.findById(leaveRequestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Leave request not found!"));
 
@@ -166,6 +184,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
 
         leaveRequestEntity.setStatus(LeaveStatus.CANCELLED);
         leaveRequestEntity.setUpdatedAt(Instant.now());
+        leaveRequestEntity.setUpdatedBy(userId);
 
         LeaveRequestEntity savedLeaveEntity = leaveRequestRepository.save(leaveRequestEntity);
 

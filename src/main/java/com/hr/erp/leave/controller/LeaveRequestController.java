@@ -51,21 +51,21 @@ public class LeaveRequestController {
         return new ResponseEntity<>(successDto, HttpStatus.CREATED);
     }
 
-    @PatchMapping("/approval/{leaveRequestId}")
+    @PatchMapping("/{leaveRequestId}/approval")
     public ResponseEntity<SuccessDto<LeaveResponseDto>> approveLeaveRequest(@PathVariable String leaveRequestId) {
         LeaveResponseDto response = leaveRequestService.approveLeaveRequest(leaveRequestId);
         SuccessDto<LeaveResponseDto> successDto = new SuccessDto<>(SuccessStatus.SUCCESS, response);
         return new ResponseEntity<>(successDto, HttpStatus.OK);
     }
 
-    @PatchMapping("/denial/{leaveRequestId}")
+    @PatchMapping("/{leaveRequestId}/denial")
     public ResponseEntity<SuccessDto<LeaveResponseDto>> rejectLeaveRequest(@PathVariable String leaveRequestId) {
         LeaveResponseDto response = leaveRequestService.rejectLeaveRequest(leaveRequestId);
         SuccessDto<LeaveResponseDto> successDto = new SuccessDto<>(SuccessStatus.SUCCESS, response);
         return new ResponseEntity<>(successDto, HttpStatus.OK);
     }
 
-    @PatchMapping("/cancel/{leaveRequestId}")
+    @PatchMapping("/{leaveRequestId}/cancel")
     public ResponseEntity<SuccessDto<LeaveResponseDto>> cancelLeaveRequest(@PathVariable String leaveRequestId) {
         LeaveResponseDto response = leaveRequestService.cancelLeaveRequest(leaveRequestId);
         SuccessDto<LeaveResponseDto> successDto = new SuccessDto<>(SuccessStatus.SUCCESS, response);

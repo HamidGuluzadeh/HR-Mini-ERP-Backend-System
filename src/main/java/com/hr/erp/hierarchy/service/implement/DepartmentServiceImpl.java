@@ -17,8 +17,11 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.Objects;
 
 @Service
@@ -49,6 +52,9 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     @Transactional
     public DepartmentResponse createDepartment(DepartmentRequest request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userId = auth != null ? auth.getName() : "SYSTEM";
+
         if (departmentRepository.existsByCode(request.code())) {
             throw new ResourceAlreadyExistsException("Department " + request.code() + " already exists!");
         }
@@ -62,6 +68,8 @@ public class DepartmentServiceImpl implements DepartmentService {
             department.setParent(parent);
         }
 
+        department.setCreatedBy(userId);
+
         Department savedDepartment = departmentRepository.save(department);
 
         return departmentMapper.mapEntityToResponse(savedDepartment);
@@ -70,6 +78,9 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     @Transactional
     public DepartmentResponse updateDepartment(String departmentId, DepartmentRequest request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userId = auth != null ? auth.getName() : "SYSTEM";
+
         Department department = departmentRepository.findById(departmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Department not found!"));
 
@@ -91,6 +102,9 @@ public class DepartmentServiceImpl implements DepartmentService {
         } else {
             department.setParent(null);
         }
+
+        department.setUpdatedAt(Instant.now());
+        department.setUpdatedBy(userId);
 
         Department updatedDepartment = departmentRepository.save(department);
 

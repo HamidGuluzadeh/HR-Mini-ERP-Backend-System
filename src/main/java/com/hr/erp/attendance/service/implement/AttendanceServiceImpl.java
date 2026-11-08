@@ -20,6 +20,8 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.*;
@@ -85,6 +87,9 @@ public class AttendanceServiceImpl implements AttendanceService {
     @Override
     @Transactional
     public AttendanceResponse checkIn(String employeeId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userId = auth != null ? auth.getName() : "SYSTEM";
+
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found!"));
 
@@ -106,7 +111,7 @@ public class AttendanceServiceImpl implements AttendanceService {
                 .checkIn(now)
                 .status(attendanceStatus)
                 .createdAt(now)
-                .createdBy("SYSTEM")
+                .createdBy(userId)
                 .build();
 
         Attendance savedAttendance = attendanceRepository.save(attendance);
@@ -117,6 +122,9 @@ public class AttendanceServiceImpl implements AttendanceService {
     @Override
     @Transactional
     public AttendanceResponse checkOut(String employeeId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userId = auth != null ? auth.getName() : "SYSTEM";
+
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found!"));
 
@@ -133,7 +141,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 
         attendance.setCheckOut(Instant.now());
         attendance.setUpdatedAt(Instant.now());
-        attendance.setUpdatedBy("SYSTEM");
+        attendance.setUpdatedBy(userId);
 
         if (!Objects.isNull(attendance.getCheckIn())) {
             long workedHours = Duration.between(attendance.getCheckIn(), attendance.getCheckOut()).toHours();
@@ -152,6 +160,9 @@ public class AttendanceServiceImpl implements AttendanceService {
     @Override
     @Transactional
     public AttendanceResponse createAttendance(AttendanceRequest request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userId = auth.getName();
+
         Employee employee = employeeRepository.findById(request.employeeId())
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found!"));
 
@@ -180,7 +191,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 
         attendance.setEmployee(employee);
         attendance.setCreatedAt(Instant.now());
-        attendance.setCreatedBy("ADMIN");
+        attendance.setCreatedBy(userId);
 
         Attendance savedAttendance = attendanceRepository.save(attendance);
 
@@ -190,6 +201,9 @@ public class AttendanceServiceImpl implements AttendanceService {
     @Override
     @Transactional
     public AttendanceResponse updateAttendance(String attendanceId, AttendanceRequest request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userId = auth.getName();
+
         Attendance attendance = attendanceRepository.findById(attendanceId)
                 .orElseThrow(() -> new ResourceNotFoundException("Attendance record not found!"));
 
@@ -217,7 +231,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         attendanceMapper.updateEntityFromRequest(request, attendance);
         attendance.setEmployee(employee);
         attendance.setUpdatedAt(Instant.now());
-        attendance.setUpdatedBy("ADMIN");
+        attendance.setUpdatedBy(userId);
 
         Attendance savedAttendance = attendanceRepository.save(attendance);
 

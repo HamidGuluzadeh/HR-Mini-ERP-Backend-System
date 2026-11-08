@@ -41,7 +41,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public AuthResponseDto login(LoginRequestDto loginRequestDto) {
-        Employee employee = employeeRepository.findByEmployeeCode(loginRequestDto.employeeCode())
+        Employee employee = employeeRepository.findByCode(loginRequestDto.employeeCode())
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found!"));
 
         User user = userRepository.findByEmployee(employee)

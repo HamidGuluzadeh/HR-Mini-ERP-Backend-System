@@ -21,8 +21,11 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -68,6 +71,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional
     public EmployeeResponse createEmployee(EmployeeRequest request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userId = auth != null ? auth.getName() : "SYSTEM";
+
         if (!Objects.isNull(request.terminationDate()) && request.terminationDate().isBefore(request.hireDate())) {
             throw new BadRequestException("Termination date cannot be before hire date!");
         }
@@ -98,6 +104,9 @@ public class EmployeeServiceImpl implements EmployeeService {
             employee.setStatus(EmployeeStatus.ACTIVE);
         }
 
+        employee.setCreatedAt(Instant.now());
+        employee.setCreatedBy(userId);
+
         Employee savedEmployee = employeeRepository.save(employee);
 
         return employeeMapper.mapEntityToResponse(savedEmployee);
@@ -106,6 +115,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional
     public EmployeeResponse updateEmployee(String employeeId, EmployeeRequest request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userId = auth != null ? auth.getName() : "SYSTEM";
+
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found!"));
 
@@ -137,6 +149,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeMapper.updateEntityFromRequest(request, employee);
         employee.setPosition(position);
         employee.setManager(manager);
+        employee.setUpdatedAt(Instant.now());
+        employee.setUpdatedBy(userId);
 
         Employee updatedEmployee = employeeRepository.save(employee);
 
@@ -146,6 +160,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional
     public void changeEmployeeStatus(String employeeId, EmployeeStatus status) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userId = auth != null ? auth.getName() : "SYSTEM";
+
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found!"));
 
@@ -154,12 +171,18 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         employee.setStatus(status);
+        employee.setUpdatedAt(Instant.now());
+        employee.setUpdatedBy(userId);
+
         employeeRepository.save(employee);
     }
 
     @Override
     @Transactional
     public void terminateEmployee(String employeeId, LocalDate terminationDate) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userId = auth != null ? auth.getName() : "SYSTEM";
+
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found!"));
 
@@ -177,6 +200,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         employee.setStatus(EmployeeStatus.TERMINATED);
         employee.setTerminationDate(terminationDate);
+        employee.setUpdatedAt(Instant.now());
+        employee.setUpdatedBy(userId);
 
         employeeRepository.save(employee);
     }

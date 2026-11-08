@@ -20,7 +20,11 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.time.Instant;
 
 @Service
 @RequiredArgsConstructor
@@ -64,6 +68,9 @@ public class PositionServiceImpl implements PositionService {
     @Override
     @Transactional
     public PositionResponse createPosition(PositionRequest request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userId = auth != null ? auth.getName() : "SYSTEM";
+
         Department department = departmentRepository.findById(request.departmentId())
                 .orElseThrow(() -> new ResourceNotFoundException("Department not found!"));
 
@@ -78,6 +85,8 @@ public class PositionServiceImpl implements PositionService {
 
         Position position = positionMapper.mapRequestToEntity(request);
         position.setDepartment(department);
+        position.setCreatedAt(Instant.now());
+        position.setCreatedBy(userId);
 
         Position savedPosition = positionRepository.save(position);
 
@@ -87,6 +96,9 @@ public class PositionServiceImpl implements PositionService {
     @Override
     @Transactional
     public PositionResponse updatePosition(String positionId, PositionRequest request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userId = auth != null ? auth.getName() : "SYSTEM";
+
         Position position = positionRepository.findById(positionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Position not found!"));
 
@@ -104,6 +116,8 @@ public class PositionServiceImpl implements PositionService {
 
         positionMapper.updateEntityFromRequest(request, position);
         position.setDepartment(department);
+        position.setUpdatedAt(Instant.now());
+        position.setUpdatedBy(userId);
 
         Position updatedPosition = positionRepository.save(position);
 

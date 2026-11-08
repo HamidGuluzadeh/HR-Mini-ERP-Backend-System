@@ -51,6 +51,8 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
     @Override
     @Transactional
     public LeaveTypeResponseDto createLeaveType(CreateLeaveTypeRequestDto request) {
+
+
         if (leaveTypeRepository.existsByNameIgnoreCase(request.name())) {
             throw new ResourceAlreadyExistsException(request.name() + " already exists!");
         }
