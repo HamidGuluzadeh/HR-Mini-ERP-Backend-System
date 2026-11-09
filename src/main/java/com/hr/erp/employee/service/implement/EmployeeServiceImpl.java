@@ -1,5 +1,7 @@
 package com.hr.erp.employee.service.implement;
 
+import com.hr.erp.employee.dto.request.ChangeSalaryRequest;
+import com.hr.erp.employee.entity.EmployeeContract;
 import com.hr.erp.employee.model.EmployeeStatus;
 import com.hr.erp.common.exception.BadRequestException;
 import com.hr.erp.common.exception.ConflictException;
@@ -9,6 +11,7 @@ import com.hr.erp.employee.dto.request.EmployeeRequest;
 import com.hr.erp.employee.dto.response.EmployeeResponse;
 import com.hr.erp.employee.entity.Employee;
 import com.hr.erp.employee.mapper.EmployeeMapper;
+import com.hr.erp.employee.repository.EmployeeContractRepository;
 import com.hr.erp.employee.repository.EmployeeRepository;
 import com.hr.erp.employee.service.EmployeeService;
 import com.hr.erp.hierarchy.entity.Position;
@@ -36,16 +39,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     EmployeeRepository employeeRepository;
     PositionRepository positionRepository;
     DepartmentRepository departmentRepository;
+    EmployeeContractRepository contractRepository;
     EmployeeMapper employeeMapper;
-
-    @Override
-    public Page<EmployeeResponse> getAllEmployees(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-
-        Page<Employee> employees = employeeRepository.findAll(pageable);
-
-        return employees.map(employeeMapper::mapEntityToResponse);
-    }
 
     @Override
     public Page<EmployeeResponse> getEmployeesByDepartment(String departmentId, int page, int size) {
@@ -57,7 +52,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         Page<Employee> employees = employeeRepository.findAllByPositionDepartmentId(departmentId, pageable);
 
-        return employees.map(employeeMapper::mapEntityToResponse);
+        return employees.map(employee -> {
+            EmployeeContract contract = contractRepository.findByEmployeeIdAndIsActiveTrue(employee.getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Any active contract not found for employee!"));
+
+            return employeeMapper.mapEntityToResponse(employee, contract);
+        });
     }
 
     @Override
@@ -65,7 +65,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found!"));
 
-        return employeeMapper.mapEntityToResponse(employee);
+        EmployeeContract contract = contractRepository.findByEmployeeIdAndIsActiveTrue(employeeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Any active contract not found for employee!"));
+
+        return employeeMapper.mapEntityToResponse(employee, contract);
     }
 
     @Override
@@ -109,7 +112,19 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         Employee savedEmployee = employeeRepository.save(employee);
 
-        return employeeMapper.mapEntityToResponse(savedEmployee);
+        EmployeeContract contract = EmployeeContract.builder()
+                .employee(savedEmployee)
+                .salaryType(request.salaryType())
+                .baseSalary(request.baseSalary())
+                .hourlyRate(request.hourlyRate())
+                .effectiveFrom(request.hireDate())
+                .effectiveTo(null)
+                .isActive(true)
+                .build();
+
+        contractRepository.save(contract);
+
+        return employeeMapper.mapEntityToResponse(savedEmployee, contract);
     }
 
     @Override
@@ -120,6 +135,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found!"));
+
+        EmployeeContract contract = contractRepository.findByEmployeeIdAndIsActiveTrue(employeeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Any active contract not found for employee!"));
 
         if (!Objects.isNull(request.terminationDate()) && request.terminationDate().isBefore(request.hireDate())) {
             throw new BadRequestException("Termination date cannot be before hire date!");
@@ -154,7 +172,37 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         Employee updatedEmployee = employeeRepository.save(employee);
 
-        return employeeMapper.mapEntityToResponse(updatedEmployee);
+
+
+        return employeeMapper.mapEntityToResponse(updatedEmployee, contract);
+    }
+
+    @Override
+    @Transactional
+    public void changeSalary(String employeeId, ChangeSalaryRequest request) {
+        EmployeeContract currentContract = contractRepository.findByEmployeeIdAndIsActiveTrue(employeeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Any active contract not found for employee!"));
+
+        if (request.effectiveFrom().isBefore(currentContract.getEffectiveFrom()) ||
+                request.effectiveFrom().isEqual(currentContract.getEffectiveFrom())) {
+            throw new BadRequestException("New contract's effective date must be after the current contract's start date!");
+        }
+
+        currentContract.setEffectiveTo(request.effectiveFrom().minusDays(1));
+        currentContract.setIsActive(false);
+        contractRepository.save(currentContract);
+
+        EmployeeContract newContract = EmployeeContract.builder()
+                .employee(currentContract.getEmployee())
+                .salaryType(request.salaryType())
+                .baseSalary(request.baseSalary())
+                .hourlyRate(request.hourlyRate())
+                .effectiveFrom(request.effectiveFrom())
+                .effectiveTo(null)
+                .isActive(true)
+                .build();
+
+        contractRepository.save(newContract);
     }
 
     @Override

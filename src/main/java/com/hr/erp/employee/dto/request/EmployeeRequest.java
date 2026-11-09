@@ -1,12 +1,14 @@
 package com.hr.erp.employee.dto.request;
 
 import com.hr.erp.employee.model.EmployeeStatus;
+import com.hr.erp.employee.model.SalaryType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Builder
@@ -24,9 +26,14 @@ public record EmployeeRequest(@NotBlank(message = "First name is required!")
                               String phoneNumber,
                               @NotNull(message = "Hire date is required!")
                               LocalDate hireDate,
+                              @NotNull(message = "Salary type is required!")
+                              SalaryType salaryType,
+                              BigDecimal baseSalary,
+                              BigDecimal hourlyRate,
                               LocalDate terminationDate,
                               @NotBlank(message = "Position ID is required!")
                               String positionId,
                               String managerId,
                               EmployeeStatus status) {
+
 }

@@ -1,5 +1,6 @@
 package com.hr.erp.employee.service;
 
+import com.hr.erp.employee.dto.request.ChangeSalaryRequest;
 import com.hr.erp.employee.model.EmployeeStatus;
 import com.hr.erp.employee.dto.request.EmployeeRequest;
 import com.hr.erp.employee.dto.response.EmployeeResponse;
@@ -9,8 +10,6 @@ import java.time.LocalDate;
 
 public interface EmployeeService {
 
-    Page<EmployeeResponse> getAllEmployees(int page, int size);
-
     Page<EmployeeResponse> getEmployeesByDepartment(String departmentId, int page, int size);
 
     EmployeeResponse getEmployeeById(String employeeId);
@@ -18,6 +17,8 @@ public interface EmployeeService {
     EmployeeResponse createEmployee(EmployeeRequest request);
 
     EmployeeResponse updateEmployee(String employeeId, EmployeeRequest request);
+
+    void changeSalary(String employeeId, ChangeSalaryRequest request);
 
     void changeEmployeeStatus(String employeeId, EmployeeStatus status);
 
