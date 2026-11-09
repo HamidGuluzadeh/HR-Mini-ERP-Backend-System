@@ -10,6 +10,8 @@ public record DepartmentResponse(String id,
                                  String code,
                                  String parentId,
                                  Instant createdAt,
-                                 Instant updatedAt) {
+                                 String createdBy,
+                                 Instant updatedAt,
+                                 String updatedBy) {
 
 }

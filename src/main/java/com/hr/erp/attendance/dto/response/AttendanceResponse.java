@@ -15,6 +15,9 @@ public record AttendanceResponse(String id,
                                  Instant checkIn,
                                  Instant checkOut,
                                  AttendanceStatus status,
-                                 Instant createdAt) {
+                                 Instant createdAt,
+                                 String createdBy,
+                                 Instant updatedAt,
+                                 String updatedBy) {
 
 }

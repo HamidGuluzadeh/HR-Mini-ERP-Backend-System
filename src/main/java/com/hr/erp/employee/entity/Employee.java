@@ -54,6 +54,12 @@ public class Employee {
     @JoinColumn(name = "manager_id", referencedColumnName = "id")
     Employee manager;
 
+    @Column(name = "bank_name", length = 50, nullable = false)
+    String bankName;
+
+    @Column(name = "iban", length = 34, nullable = false, unique = true)
+    String iban;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
     EmployeeStatus status;

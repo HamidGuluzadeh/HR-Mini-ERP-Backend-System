@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: 012-add-bank-details-to-employees
+      author: Hamid Guluzadeh
+      changes:
+        - addColumn:
+            tableName: employees
+            columns:
+              - column:
+                  name: bank_name
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: iban
+                  type: VARCHAR(34)
+                  constraints:
+                    nullable: false
+                    unique: true

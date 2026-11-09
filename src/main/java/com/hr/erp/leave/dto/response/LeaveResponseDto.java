@@ -18,6 +18,8 @@ public record LeaveResponseDto(String id,
                                String approvedByFullName,
                                String reason,
                                Instant createdAt,
-                               Instant updatedAt) {
+                               String createdBy,
+                               Instant updatedAt,
+                               String updatedBy) {
 
 }

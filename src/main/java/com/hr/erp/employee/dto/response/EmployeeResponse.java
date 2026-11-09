@@ -19,7 +19,12 @@ public record EmployeeResponse(String id,
                                String departmentName,
                                String managerId,
                                String managerFullName,
+                               String bankName,
+                               String iban,
                                EmployeeStatus status,
                                Instant createdAt,
-                               Instant updatedAt) {
+                               String createdBy,
+                               Instant updatedAt,
+                               String updatedBy) {
+
 }

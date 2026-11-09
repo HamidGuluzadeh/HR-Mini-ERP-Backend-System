@@ -1,6 +1,7 @@
 package com.hr.erp.attendance.repository;
 
 import com.hr.erp.attendance.entity.Attendance;
+import com.hr.erp.attendance.model.AttendanceStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,5 +22,8 @@ public interface AttendanceRepository extends JpaRepository<Attendance, String> 
     boolean existsByEmployeeIdAndWorkDate(String employeeId, LocalDate workDate);
 
     Optional<Attendance> findByEmployeeIdAndWorkDate(String employeeId, LocalDate workDate);
+
+    long countByEmployeeIdAndStatusAndWorkDateBetween(String employeeId, AttendanceStatus status,
+                                                      LocalDate startDate, LocalDate endDate);
 
 }

@@ -34,6 +34,12 @@ public record EmployeeRequest(@NotBlank(message = "First name is required!")
                               @NotBlank(message = "Position ID is required!")
                               String positionId,
                               String managerId,
+                              @NotBlank(message= "Bank name is required!")
+                              @Size(min = 3, max = 50, message = "Bank name must contain between 3-50 characters long!")
+                              String bankName,
+                              @NotBlank(message = "IBAN is required!")
+                              @Size(max = 34, message = "IBAN cannot exceed 34 characters long!")
+                              String iban,
                               EmployeeStatus status) {
 
 }

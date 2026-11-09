@@ -12,6 +12,8 @@ public record PositionResponse(String id,
                                BigDecimal minSalary,
                                BigDecimal maxSalary,
                                Instant createdAt,
-                               Instant updatedAt) {
+                               String createdBy,
+                               Instant updatedAt,
+                               String updatedBy) {
 
 }

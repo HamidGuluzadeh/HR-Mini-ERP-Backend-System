@@ -7,6 +7,8 @@ public record LeaveTypeResponseDto(String id,
                                    Integer maxDaysPerYear,
                                    Boolean isPaid,
                                    Instant createdAt,
-                                   Instant updatedAt) {
+                                   String createdBy,
+                                   Instant updatedAt,
+                                   String updatedBy) {
 
 }
