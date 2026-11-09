@@ -25,8 +25,9 @@ public class AttendanceExportServiceImpl implements AttendanceExportService {
             throw new ResourceNotFoundException("Employee not found!");
         }
 
-        return attendanceRepository.countByEmployeeIdAndStatusAndWorkDateBetween(employeeId,
-                AttendanceStatus.ABSENT, startDate, endDate);
+        return attendanceRepository.countByEmployeeIdAndStatusAndWorkDateBetween(
+                employeeId, AttendanceStatus.ABSENT, startDate, endDate
+        );
     }
 
     @Override
@@ -35,7 +36,8 @@ public class AttendanceExportServiceImpl implements AttendanceExportService {
             throw new ResourceNotFoundException("Employee not found!");
         }
 
-        return attendanceRepository.countByEmployeeIdAndStatusAndWorkDateBetween(employeeId,
-                AttendanceStatus.LATE, startDate, endDate);
+        return attendanceRepository.countByEmployeeIdAndStatusAndWorkDateBetween(
+                employeeId, AttendanceStatus.LATE, startDate, endDate
+        );
     }
 }

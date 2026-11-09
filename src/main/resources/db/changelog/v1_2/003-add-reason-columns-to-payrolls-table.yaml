@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-add-reason-columns-to-payrolls-table-2026-11-09
+      author: Hamid Guluzadeh
+      changes:
+        - addColumn:
+            tableName: payrolls
+            columns:
+              - column:
+                  name: bonus_reason
+                  type: TEXT
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: deduction_reason
+                  type: TEXT
+                  constraints:
+                    nullable: false

@@ -42,8 +42,14 @@ public class Payroll {
     @Column(name = "bonus", precision = 5, scale = 2)
     BigDecimal bonus;
 
+    @Column(name = "bonus_reason", length = 500, nullable = false)
+    String bonusReason;
+
     @Column(name = "deductions", precision = 6, scale = 2)
     BigDecimal deductions;
+
+    @Column(name = "deduction_reason", length = 500, nullable = false)
+    String deductionReason;
 
     @Column(name = "net_salary", nullable = false, precision = 6, scale = 2)
     BigDecimal netSalary;

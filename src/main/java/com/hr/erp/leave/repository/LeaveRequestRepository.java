@@ -46,4 +46,18 @@ public interface LeaveRequestRepository extends JpaRepository<LeaveRequestEntity
             @Param("year") int year
     );
 
+    @Query("""
+        SELECT COALESCE(SUM(l.totalDays), 0) FROM LeaveRequestEntity l
+        WHERE l.employee.id = :employeeId
+        AND l.leaveType.isPaid = false
+        AND l.status = :status
+        AND (l.startDate <= :endDate AND l.endDate >= :startDate)
+        """)
+    Long sumUnpaidLeaveDaysInPeriod(
+            @Param("employeeId") String employeeId,
+            @Param("status") LeaveStatus status,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
+
 }
