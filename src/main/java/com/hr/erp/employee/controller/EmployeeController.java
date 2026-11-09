@@ -1,6 +1,7 @@
 package com.hr.erp.employee.controller;
 
 import com.hr.erp.common.dto.SuccessDto;
+import com.hr.erp.employee.dto.request.ChangeSalaryRequest;
 import com.hr.erp.employee.model.EmployeeStatus;
 import com.hr.erp.common.enums.SuccessStatus;
 import com.hr.erp.employee.dto.request.EmployeeRequest;
@@ -21,14 +22,6 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class EmployeeController {
     private final EmployeeService employeeService;
-
-    @GetMapping("/all")
-    public ResponseEntity<SuccessDto<Page<EmployeeResponse>>> getAllEmployees(@RequestParam(defaultValue = "0") int page,
-                                                                              @RequestParam(defaultValue = "20") int size) {
-        Page<EmployeeResponse> response = employeeService.getAllEmployees(page, size);
-        SuccessDto<Page<EmployeeResponse>> successDto = new SuccessDto<>(SuccessStatus.SUCCESS, response);
-        return new ResponseEntity<>(successDto, HttpStatus.OK);
-    }
 
     @GetMapping("/department/{departmentId}/all")
     public ResponseEntity<SuccessDto<Page<EmployeeResponse>>> getEmployeesByDepartment(@PathVariable String departmentId,
@@ -59,6 +52,13 @@ public class EmployeeController {
         EmployeeResponse response = employeeService.updateEmployee(employeeId, request);
         SuccessDto<EmployeeResponse> successDto = new SuccessDto<>(SuccessStatus.SUCCESS, response);
         return new ResponseEntity<>(successDto, HttpStatus.OK);
+    }
+
+    @PatchMapping("/{employeeId}/salary")
+    public ResponseEntity<Void> changeSalary(@PathVariable String employeeId,
+                                             @RequestBody @Valid ChangeSalaryRequest request) {
+        employeeService.changeSalary(employeeId, request);
+        return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/{employeeId}/status")
