@@ -2,35 +2,45 @@ package com.hr.erp.payroll.service.implement;
 
 import com.hr.erp.attendance.service.AttendanceExportService;
 import com.hr.erp.common.exception.BadRequestException;
+import com.hr.erp.common.exception.ConflictException;
 import com.hr.erp.common.exception.ResourceNotFoundException;
 import com.hr.erp.employee.entity.Employee;
 import com.hr.erp.employee.entity.EmployeeContract;
+import com.hr.erp.employee.model.EmployeeStatus;
 import com.hr.erp.employee.model.SalaryType;
 import com.hr.erp.employee.repository.EmployeeContractRepository;
 import com.hr.erp.employee.repository.EmployeeRepository;
 import com.hr.erp.hierarchy.repository.DepartmentRepository;
 import com.hr.erp.leave.model.LeaveType;
 import com.hr.erp.leave.service.LeaveExportService;
+import com.hr.erp.payroll.dto.request.CreatePayrollRequestDto;
+import com.hr.erp.payroll.dto.request.UpdatePayrollRequestDto;
 import com.hr.erp.payroll.dto.response.PayrollResponseDto;
 import com.hr.erp.payroll.entity.Payroll;
 import com.hr.erp.payroll.mapper.PayrollMapper;
 import com.hr.erp.payroll.model.PayrollStatus;
 import com.hr.erp.payroll.repository.PayrollRepository;
 import com.hr.erp.payroll.service.PayrollService;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -79,6 +89,101 @@ public class PayrollServiceImpl implements PayrollService {
                 .orElseThrow(() -> new ResourceNotFoundException("Payroll record not found!"));
 
         return payrollMapper.mapEntityToResponse(payroll);
+    }
+
+    @Override
+    @Transactional
+    public PayrollResponseDto createIndividualPayroll(CreatePayrollRequestDto request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userId = !Objects.isNull(auth) ? auth.getName() : "SYSTEM";
+
+        Employee employee = employeeRepository.findById(request.employeeId())
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found!"));
+
+        if (payrollRepository.existsByEmployeeIdAndPeriodStartAndPeriodEnd(employee.getId(), request.periodStart(), request.periodEnd())) {
+            throw new ConflictException("Payroll already exists for this period!");
+        }
+
+        Payroll payroll = calculatePayroll(employee, request.periodStart(), request.periodEnd(), request.bonus(),
+                request.bonusReason(), request.deductions(), request.deductionReason());
+
+        payroll.setCreatedAt(Instant.now());
+        payroll.setCreatedBy(userId);
+
+        Payroll savedPayroll = payrollRepository.save(payroll);
+
+        return payrollMapper.mapEntityToResponse(savedPayroll);
+    }
+
+    @Override
+    @Transactional
+    public PayrollResponseDto updatePayroll(String payrollId, UpdatePayrollRequestDto request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userId = !Objects.isNull(auth) ? auth.getName() : "SYSTEM";
+
+        Payroll payroll = payrollRepository.findById(payrollId)
+                .orElseThrow(() -> new ResourceNotFoundException("Payroll record not found!"));
+
+        if (!payroll.getStatus().equals(PayrollStatus.DRAFT)) {
+            throw new BadRequestException("Only DRAFT payrolls can be updated!");
+        }
+
+        BigDecimal base = payroll.getBaseSalary();
+
+        Payroll recalculatedPayroll = calculatePayroll(payroll.getEmployee(), payroll.getPeriodStart(), payroll.getPeriodEnd(),
+                request.bonus(), request.bonusReason(),
+                request.deductions(), request.deductionReason());
+
+        payroll.setBonus(recalculatedPayroll.getBonus());
+        payroll.setBonusReason(recalculatedPayroll.getBonusReason());
+        payroll.setDeductions(recalculatedPayroll.getDeductions());
+        payroll.setDeductionReason(recalculatedPayroll.getDeductionReason());
+        payroll.setNetSalary(recalculatedPayroll.getNetSalary());
+        payroll.setUpdatedAt(Instant.now());
+        payroll.setUpdatedBy(userId);
+
+        Payroll savedPayroll = payrollRepository.save(payroll);
+
+        return payrollMapper.mapEntityToResponse(savedPayroll);
+    }
+
+    @Override
+    @Transactional
+    public void createDepartmentPayrolls(String departmentId, LocalDate periodStart, LocalDate periodEnd) {
+        List<Employee> employees = employeeRepository.findAllByPositionDepartmentIdAndStatus(departmentId, EmployeeStatus.ACTIVE);
+
+        List<Payroll> payrolls = employees.stream()
+                .filter(emp -> !payrollRepository.existsByEmployeeIdAndPeriodStartAndPeriodEnd(emp.getId(), periodStart, periodEnd))
+                .map(emp -> calculatePayroll(
+                        emp, periodStart, periodEnd, BigDecimal.ZERO, null, BigDecimal.ZERO, null
+                ))
+                .toList();
+
+        payrollRepository.saveAll(payrolls);
+    }
+
+    @Override
+    @Transactional
+    public void approveDepartmentPayrolls(String departmentId, LocalDate periodStart, LocalDate periodEnd) {
+        List<Payroll> payrolls = payrollRepository.findByEmployeePositionDepartmentIdAndPeriodStartAndPeriodEndAndStatus(
+                departmentId, periodStart, periodEnd, PayrollStatus.DRAFT
+        );
+
+        payrolls.forEach(payroll -> payroll.setStatus(PayrollStatus.APPROVED));
+
+        payrollRepository.saveAll(payrolls);
+    }
+
+    @Override
+    @Transactional
+    public void executeDepartmentPayments(String departmentId, LocalDate periodStart, LocalDate periodEnd) {
+        List<Payroll> approvedPayrolls = payrollRepository.findByEmployeePositionDepartmentIdAndPeriodStartAndPeriodEndAndStatus(
+                departmentId, periodStart, periodEnd, PayrollStatus.APPROVED
+        );
+
+        approvedPayrolls.forEach(payroll -> payroll.setStatus(PayrollStatus.PAID));
+
+        payrollRepository.saveAll(approvedPayrolls);
     }
 
     private Payroll calculatePayroll(Employee employee, LocalDate periodStart, LocalDate periodEnd,
