@@ -2,7 +2,7 @@ package com.hr.erp.auth.model;
 
 public enum UserRole {
     ADMIN,
-    HR,
-    MANAGER,
+    HR_MANAGER,
+    LINE_MANAGER,
     EMPLOYEE
 }
