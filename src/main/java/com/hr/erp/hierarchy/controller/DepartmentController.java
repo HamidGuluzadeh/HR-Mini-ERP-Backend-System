@@ -10,6 +10,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import static com.hr.erp.common.enums.SuccessStatus.SUCCESS;
@@ -22,6 +23,7 @@ public class DepartmentController {
     DepartmentService departmentService;
 
     @GetMapping("/all")
+
     public ResponseEntity<SuccessDto<Page<DepartmentResponse>>> getAllDepartments(@RequestParam(defaultValue = "0")
                                                                                   int page,
                                                                                   @RequestParam(defaultValue = "10")
@@ -39,6 +41,7 @@ public class DepartmentController {
     }
 
     @PostMapping("/new")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<SuccessDto<DepartmentResponse>> createDepartment(@RequestBody DepartmentRequest request) {
         DepartmentResponse response = departmentService.createDepartment(request);
         SuccessDto<DepartmentResponse> successDto = new SuccessDto<>(SUCCESS, response);
@@ -46,6 +49,7 @@ public class DepartmentController {
     }
 
     @PutMapping("/{departmentId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<SuccessDto<DepartmentResponse>> updateDepartment(@PathVariable String departmentId,
                                                                            @RequestBody DepartmentRequest request) {
         DepartmentResponse response = departmentService.updateDepartment(departmentId, request);
@@ -54,6 +58,7 @@ public class DepartmentController {
     }
 
     @DeleteMapping("/{departmentId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteDepartment(@PathVariable String departmentId) {
         departmentService.deleteDepartment(departmentId);
         return ResponseEntity.noContent().build();

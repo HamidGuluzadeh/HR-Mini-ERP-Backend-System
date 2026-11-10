@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -22,6 +23,7 @@ public class AttendanceController {
     private final AttendanceService attendanceService;
 
     @GetMapping("/employee/{employeeId}/all")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER', 'LINE_MANAGER')")
     public ResponseEntity<SuccessDto<Page<AttendanceResponse>>> getAttendancesByEmployee(@PathVariable String employeeId,
                                                                                          @RequestParam(defaultValue = "0") int page,
                                                                                          @RequestParam(defaultValue = "20") int size) {
@@ -31,6 +33,7 @@ public class AttendanceController {
     }
 
     @GetMapping("/date")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER', 'LINE_MANAGER')")
     public ResponseEntity<SuccessDto<Page<AttendanceResponse>>> getAttendancesByDate(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate workDate,
                                                                                      @RequestParam(defaultValue = "0") int page,
                                                                                      @RequestParam(defaultValue = "20") int size) {
@@ -40,6 +43,7 @@ public class AttendanceController {
     }
 
     @GetMapping("/date-range")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER', 'LINE_MANAGER')")
     public ResponseEntity<SuccessDto<Page<AttendanceResponse>>> getAttendancesByDateRange(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
                                                                                           @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
                                                                                           @RequestParam(defaultValue = "0") int page,
@@ -50,6 +54,7 @@ public class AttendanceController {
     }
 
     @GetMapping("/{attendanceId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER', 'LINE_MANAGER')")
     public ResponseEntity<SuccessDto<AttendanceResponse>> getAttendanceById(@PathVariable String attendanceId) {
         AttendanceResponse response = attendanceService.getAttendanceById(attendanceId);
         SuccessDto<AttendanceResponse> successDto = new SuccessDto<>(SuccessStatus.SUCCESS, response);
@@ -71,6 +76,7 @@ public class AttendanceController {
     }
 
     @PostMapping("/new")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER', 'LINE_MANAGER')")
     public ResponseEntity<SuccessDto<AttendanceResponse>> createAttendance(@RequestBody @Valid AttendanceRequest request) {
         AttendanceResponse response = attendanceService.createAttendance(request);
         SuccessDto<AttendanceResponse> successDto = new SuccessDto<>(SuccessStatus.SUCCESS, response);
@@ -78,6 +84,7 @@ public class AttendanceController {
     }
 
     @PutMapping("/{attendanceId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER', 'LINE_MANAGER')")
     public ResponseEntity<SuccessDto<AttendanceResponse>> updateAttendance(@PathVariable String attendanceId,
                                                                            @RequestBody @Valid  AttendanceRequest request) {
         AttendanceResponse response = attendanceService.updateAttendance(attendanceId, request);

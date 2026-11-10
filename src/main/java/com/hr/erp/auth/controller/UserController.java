@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,6 +22,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/department/{departmentId}/all")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER')")
     public ResponseEntity<SuccessDto<Page<UserResponseDto>>> getUsersByDepartmentId(@PathVariable String departmentId,
                                                                                     @RequestParam(defaultValue = "0") int page,
                                                                                     @RequestParam(defaultValue = "20") int size) {
@@ -30,6 +32,7 @@ public class UserController {
     }
 
     @GetMapping("/department/code/{departmentCode}/all")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER')")
     public ResponseEntity<SuccessDto<Page<UserResponseDto>>> getUsersByDepartmentCode(@PathVariable String departmentCode,
                                                                                       @RequestParam(defaultValue = "0") int page,
                                                                                       @RequestParam(defaultValue = "20") int size) {
@@ -39,6 +42,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER')")
     public ResponseEntity<SuccessDto<UserResponseDto>> getUserById(@PathVariable String userId) {
         UserResponseDto response = userService.getUserById(userId);
         SuccessDto<UserResponseDto> successDto = new SuccessDto<>(SuccessStatus.SUCCESS, response);
@@ -46,6 +50,7 @@ public class UserController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<SuccessDto<UserResponseDto>> createUser(@RequestBody @Valid CreateUserRequestDto request) {
         UserResponseDto response = userService.createUser(request);
         SuccessDto<UserResponseDto> successDto = new SuccessDto<>(SuccessStatus.SUCCESS, response);
@@ -59,6 +64,7 @@ public class UserController {
     }
 
     @PatchMapping("/{userId}/status")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> changeStatus(@PathVariable String userId, @RequestParam UserStatus status) {
         userService.changeStatus(userId, status);
         return ResponseEntity.ok().build();

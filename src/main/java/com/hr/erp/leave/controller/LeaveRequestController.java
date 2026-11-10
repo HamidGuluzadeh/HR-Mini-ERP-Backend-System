@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,6 +21,7 @@ public class LeaveRequestController {
     private final LeaveRequestService leaveRequestService;
 
     @GetMapping("/status")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER', 'LINE_MANAGER')")
     public ResponseEntity<SuccessDto<Page<LeaveResponseDto>>> getLeaveRequestsByStatus(@RequestParam LeaveStatus status,
                                                                                        @RequestParam(defaultValue = "0") int page,
                                                                                        @RequestParam(defaultValue = "20") int size) {
@@ -29,6 +31,7 @@ public class LeaveRequestController {
     }
 
     @GetMapping("/employee/{employeeId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER', 'LINE_MANAGER')")
     public ResponseEntity<SuccessDto<Page<LeaveResponseDto>>> getLeaveRequestsByEmployee(@PathVariable String employeeId,
                                                                                          @RequestParam(defaultValue = "0") int page,
                                                                                          @RequestParam(defaultValue = "20") int size) {
@@ -52,6 +55,7 @@ public class LeaveRequestController {
     }
 
     @PatchMapping("/{leaveRequestId}/approval")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER', 'LINE_MANAGER')")
     public ResponseEntity<SuccessDto<LeaveResponseDto>> approveLeaveRequest(@PathVariable String leaveRequestId) {
         LeaveResponseDto response = leaveRequestService.approveLeaveRequest(leaveRequestId);
         SuccessDto<LeaveResponseDto> successDto = new SuccessDto<>(SuccessStatus.SUCCESS, response);
@@ -59,6 +63,7 @@ public class LeaveRequestController {
     }
 
     @PatchMapping("/{leaveRequestId}/denial")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER', 'LINE_MANAGER')")
     public ResponseEntity<SuccessDto<LeaveResponseDto>> rejectLeaveRequest(@PathVariable String leaveRequestId) {
         LeaveResponseDto response = leaveRequestService.rejectLeaveRequest(leaveRequestId);
         SuccessDto<LeaveResponseDto> successDto = new SuccessDto<>(SuccessStatus.SUCCESS, response);

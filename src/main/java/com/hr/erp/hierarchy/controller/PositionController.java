@@ -11,6 +11,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import static com.hr.erp.common.enums.SuccessStatus.SUCCESS;
@@ -47,6 +48,7 @@ public class PositionController {
     }
 
     @PostMapping("/new")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER')")
     public ResponseEntity<SuccessDto<PositionResponse>> createPosition(@RequestBody PositionRequest request) {
         PositionResponse response = positionService.createPosition(request);
         SuccessDto<PositionResponse> successDto = new SuccessDto<>(SUCCESS, response);
@@ -54,6 +56,7 @@ public class PositionController {
     }
 
     @PutMapping("/{positionId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER')")
     public ResponseEntity<SuccessDto<PositionResponse>> updatePosition(@PathVariable String positionId,
                                                                        @RequestBody PositionRequest request) {
         PositionResponse response = positionService.updatePosition(positionId, request);
@@ -62,6 +65,7 @@ public class PositionController {
     }
 
     @DeleteMapping("/{positionId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deletePosition(@PathVariable String positionId) {
         positionService.deletePosition(positionId);
         return ResponseEntity.noContent().build();

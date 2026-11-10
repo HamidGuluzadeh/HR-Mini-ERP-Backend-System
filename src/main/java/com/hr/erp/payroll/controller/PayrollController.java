@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -23,6 +24,7 @@ public class PayrollController {
     private final PayrollService payrollService;
 
     @GetMapping("/department/{departmentId}/all")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER')")
     public ResponseEntity<SuccessDto<Page<PayrollResponseDto>>> getPayrollsByDepartmentAndPeriod(@PathVariable String departmentId,
                                                                                                  @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate periodStart,
                                                                                                  @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate periodEnd,
@@ -34,6 +36,7 @@ public class PayrollController {
     }
 
     @GetMapping("/employee/{employeeId}/all")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER')")
     public ResponseEntity<SuccessDto<Page<PayrollResponseDto>>> getPayrollsByEmployeeId(@PathVariable String employeeId,
                                                                                         @RequestParam(defaultValue = "0") int page,
                                                                                         @RequestParam(defaultValue = "20") int size) {
@@ -43,6 +46,7 @@ public class PayrollController {
     }
 
     @GetMapping("/{payrollId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER')")
     public ResponseEntity<SuccessDto<PayrollResponseDto>> getPayrollById(@PathVariable String payrollId) {
         PayrollResponseDto response = payrollService.getPayrollById(payrollId);
         SuccessDto<PayrollResponseDto> successDto = new SuccessDto<>(SuccessStatus.SUCCESS, response);
@@ -50,6 +54,7 @@ public class PayrollController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER')")
     public ResponseEntity<SuccessDto<PayrollResponseDto>> createIndividualPayroll(@RequestBody @Valid CreatePayrollRequestDto request) {
         PayrollResponseDto response = payrollService.createIndividualPayroll(request);
         SuccessDto<PayrollResponseDto> successDto = new SuccessDto<>(SuccessStatus.SUCCESS, response);
@@ -57,6 +62,7 @@ public class PayrollController {
     }
 
     @PutMapping("/{payrollId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER')")
     public ResponseEntity<SuccessDto<PayrollResponseDto>> updatePayroll(@PathVariable String payrollId,
                                                                         @RequestBody @Valid UpdatePayrollRequestDto request) {
         PayrollResponseDto response = payrollService.updatePayroll(payrollId, request);
@@ -65,6 +71,7 @@ public class PayrollController {
     }
 
     @PostMapping("/department/{departmentId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER')")
     public ResponseEntity<Void> createDepartmentPayrolls(@PathVariable String departmentId,
                                                          @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate periodStart,
                                                          @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate periodEnd) {
@@ -73,6 +80,7 @@ public class PayrollController {
     }
 
     @PutMapping("/department/{departmentId}/approval")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER')")
     public ResponseEntity<Void> approveDepartmentPayrolls(@PathVariable String departmentId,
                                                           @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate periodStart,
                                                           @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate periodEnd) {
@@ -81,6 +89,7 @@ public class PayrollController {
     }
 
     @PutMapping("/department/{departmentId}/process")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER')")
     public ResponseEntity<Void> executeDepartmentPayments(@PathVariable String departmentId,
                                                           @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate periodStart,
                                                           @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate periodEnd) {

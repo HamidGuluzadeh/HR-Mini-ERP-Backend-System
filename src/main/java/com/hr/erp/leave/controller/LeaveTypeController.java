@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,6 +36,7 @@ public class LeaveTypeController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER')")
     public ResponseEntity<SuccessDto<LeaveTypeResponseDto>> createLeaveType(@RequestBody @Valid CreateLeaveTypeRequestDto request) {
         LeaveTypeResponseDto response = leaveTypeService.createLeaveType(request);
         SuccessDto<LeaveTypeResponseDto> successDto = new SuccessDto<>(SuccessStatus.SUCCESS, response);
@@ -42,6 +44,7 @@ public class LeaveTypeController {
     }
 
     @PutMapping("/{leaveTypeId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR_MANAGER')")
     public ResponseEntity<SuccessDto<LeaveTypeResponseDto>> updateLeaveType(@PathVariable String leaveTypeId,
                                                                             @RequestBody @Valid UpdateLeaveTypeRequestDto request) {
         LeaveTypeResponseDto response = leaveTypeService.updateLeaveType(leaveTypeId, request);
