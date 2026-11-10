@@ -10,7 +10,9 @@ public record UpdatePayrollRequestDto(@NotNull(message = "Base salary is require
                                       BigDecimal baseSalary,
                                       @DecimalMin(value = "0.0", message = "Bonus cannot be negative!")
                                       BigDecimal bonus,
+                                      String bonusReason,
                                       @DecimalMin(value = "0.0", message = "Deductions cannot be negative!")
-                                      BigDecimal deductions) {
+                                      BigDecimal deductions,
+                                      String deductionReason) {
 
 }

@@ -9,11 +9,7 @@ databaseChangeLog:
               - column:
                   name: bonus_reason
                   type: TEXT
-                  constraints:
-                    nullable: false
 
               - column:
                   name: deduction_reason
                   type: TEXT
-                  constraints:
-                    nullable: false

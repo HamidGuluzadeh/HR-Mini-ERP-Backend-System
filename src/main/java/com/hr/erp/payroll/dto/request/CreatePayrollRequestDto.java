@@ -18,7 +18,9 @@ public record CreatePayrollRequestDto(@NotBlank(message = "Employee ID is requir
                                       BigDecimal baseSalary,
                                       @DecimalMin(value = "0.0", message = "Bonus cannot be negative!")
                                       BigDecimal bonus,
+                                      String bonusReason,
                                       @DecimalMin(value = "0.0", message = "Deductions cannot be negative!")
-                                      BigDecimal deductions) {
+                                      BigDecimal deductions,
+                                      String deductionReason) {
 
 }
