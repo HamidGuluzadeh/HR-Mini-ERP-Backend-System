@@ -4,6 +4,8 @@ public interface LeaveExportService {
 
     long getUnpaidLeaveDays(String employeeId, int year, int month);
 
-    int getRemainingPaidLeaveDays(String employeeId, String paidLeaveTypeId, int annualQuota);
+    int getRemainingPaidLeaveDays(String employeeId);
+
+    long getLeaveDaysByTypeAndMonth(String employeeId, String leaveTypeName, int year, int month);
 
 }

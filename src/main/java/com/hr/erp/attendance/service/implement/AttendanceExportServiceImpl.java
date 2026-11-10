@@ -20,7 +20,7 @@ public class AttendanceExportServiceImpl implements AttendanceExportService {
     EmployeeRepository employeeRepository;
 
     @Override
-    public long getUnexcusedAbsencesCount(String employeeId, LocalDate startDate, LocalDate endDate) {
+    public long getAbsencesCount(String employeeId, LocalDate startDate, LocalDate endDate) {
         if (!employeeRepository.existsById(employeeId)) {
             throw new ResourceNotFoundException("Employee not found!");
         }

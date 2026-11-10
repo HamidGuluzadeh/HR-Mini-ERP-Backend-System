@@ -23,7 +23,7 @@ public class LeaveTypeEntity {
     @Column(name = "id", nullable = false, updatable = false)
     String id;
 
-    @Column(name = "name", length = 50, nullable = false)
+    @Column(name = "name", length = 50, nullable = false, updatable = false)
     String name;
 
     @Column(name = "max_days_per_year", nullable = false)
