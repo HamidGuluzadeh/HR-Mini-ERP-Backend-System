@@ -2,6 +2,7 @@ package com.hr.erp.leave.service.implement;
 
 import com.hr.erp.common.exception.ResourceNotFoundException;
 import com.hr.erp.employee.repository.EmployeeRepository;
+import com.hr.erp.leave.entity.LeaveRequestEntity;
 import com.hr.erp.leave.entity.LeaveTypeEntity;
 import com.hr.erp.leave.model.LeaveStatus;
 import com.hr.erp.leave.model.LeaveType;
@@ -14,6 +15,9 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -60,5 +64,28 @@ public class LeaveExportServiceImpl implements LeaveExportService {
         int totalUsed = !Objects.isNull(usedDays) ? usedDays : 0;
 
         return Math.max(0, quota - totalUsed);
+    }
+
+    public long getLeaveDaysByTypeAndMonth(String employeeId, String leaveTypeName, int year, int month) {
+        if (!employeeRepository.existsById(employeeId)) {
+            throw new ResourceNotFoundException("Employee not found!");
+        }
+
+        YearMonth yearMonth = YearMonth.of(year, month);
+        LocalDate monthStart = yearMonth.atDay(1);
+        LocalDate monthEnd = yearMonth.atEndOfMonth();
+
+        List<LeaveRequestEntity> leaves = leaveRequestRepository.findAllByEmployeeAndLeaveTypeNameInPeriod(
+                employeeId, leaveTypeName, LeaveStatus.APPROVED, monthStart, monthEnd
+        );
+
+        return leaves.stream()
+                .mapToLong(leave -> {
+                    LocalDate from = leave.getStartDate().isAfter(monthStart) ? leave.getStartDate() : monthStart;
+                    LocalDate to = leave.getEndDate().isBefore(monthEnd) ? leave.getEndDate() : monthEnd;
+
+                    return ChronoUnit.DAYS.between(from, to) + 1;
+                })
+                .sum();
     }
 }

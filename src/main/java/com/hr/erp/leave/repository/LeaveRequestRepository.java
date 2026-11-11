@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Repository
 public interface LeaveRequestRepository extends JpaRepository<LeaveRequestEntity, String> {
@@ -55,6 +56,21 @@ public interface LeaveRequestRepository extends JpaRepository<LeaveRequestEntity
         """)
     Long sumUnpaidLeaveDaysInPeriod(
             @Param("employeeId") String employeeId,
+            @Param("status") LeaveStatus status,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
+
+    @Query("""
+            SELECT l FROM LeaveRequestEntity l
+            WHERE l.employee.id = :employeeId
+            AND LOWER(l.leaveType.name) = LOWER(:leaveTypeName)
+            AND l.status = :status
+            AND (l.startDate <= :endDate AND l.endDate >= :startDate)
+            """)
+    List<LeaveRequestEntity> findAllByEmployeeAndLeaveTypeNameInPeriod(
+            @Param("employeeId") String employeeId,
+            @Param("leaveTypeName") String leaveTypeName,
             @Param("status") LeaveStatus status,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
