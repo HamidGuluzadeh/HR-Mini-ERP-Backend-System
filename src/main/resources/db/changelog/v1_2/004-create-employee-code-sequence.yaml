@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-create-employee-code-sequence-2026-11-11
+      author: Hamid Guluzadeh
+      changes:
+        - createSequence:
+            sequenceName: employee_code_seq
+            startValue: 1
+            incrementBy: 1
+            cycle: false

@@ -13,6 +13,8 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -51,7 +53,8 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
     @Override
     @Transactional
     public LeaveTypeResponseDto createLeaveType(CreateLeaveTypeRequestDto request) {
-
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userId = auth != null ? auth.getName() : "SYSTEM";
 
         if (leaveTypeRepository.existsByNameIgnoreCase(request.name())) {
             throw new ResourceAlreadyExistsException(request.name() + " already exists!");
@@ -59,6 +62,7 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
 
         LeaveTypeEntity leaveTypeEntity = leaveTypeMapper.mapRequestToEntity(request);
         leaveTypeEntity.setCreatedAt(Instant.now());
+        leaveTypeEntity.setCreatedBy(userId);
 
         LeaveTypeEntity savedLeaveTypeEntity = leaveTypeRepository.save(leaveTypeEntity);
 
@@ -68,11 +72,15 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
     @Override
     @Transactional
     public LeaveTypeResponseDto updateLeaveType(String leaveTypeId, UpdateLeaveTypeRequestDto request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userId = auth != null ? auth.getName() : "SYSTEM";
+
         LeaveTypeEntity leaveTypeEntity = leaveTypeRepository.findById(leaveTypeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Leave type not found!"));
 
         leaveTypeMapper.updateEntityFromRequest(request, leaveTypeEntity);
         leaveTypeEntity.setUpdatedAt(Instant.now());
+        leaveTypeEntity.setUpdatedBy(userId);
 
         LeaveTypeEntity savedLeaveTypeEntity = leaveTypeRepository.save(leaveTypeEntity);
 

@@ -100,6 +100,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         Employee employee = employeeMapper.mapRequestToEntity(request);
+        employee.setCode(generateEmployeeCode());
         employee.setPosition(position);
         employee.setManager(manager);
 
@@ -125,6 +126,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         contractRepository.save(contract);
 
         return employeeMapper.mapEntityToResponse(savedEmployee, contract);
+    }
+
+    private String generateEmployeeCode() {
+        return String.format("EMP-%04d", employeeRepository.getNextEmployeeCodeSequence());
     }
 
     @Override

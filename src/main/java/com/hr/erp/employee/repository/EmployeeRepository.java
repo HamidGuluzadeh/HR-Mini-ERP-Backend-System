@@ -5,6 +5,7 @@ import com.hr.erp.employee.model.EmployeeStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -26,5 +27,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
     Optional<Employee> findByCode(String employeeCode);
 
     List<Employee> findAllByPositionDepartmentIdAndStatus(String positionDepartmentId, EmployeeStatus status);
+
+    @Query(value = "SELECT nextval('employee_code_seq')", nativeQuery = true)
+    Long getNextEmployeeCodeSequence();
 
 }

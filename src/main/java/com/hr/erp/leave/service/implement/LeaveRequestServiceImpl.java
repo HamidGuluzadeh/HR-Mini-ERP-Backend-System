@@ -1,9 +1,12 @@
 package com.hr.erp.leave.service.implement;
 
+import com.hr.erp.auth.entity.User;
+import com.hr.erp.auth.repository.UserRepository;
 import com.hr.erp.common.exception.BadRequestException;
 import com.hr.erp.common.exception.ConflictException;
 import com.hr.erp.common.exception.ResourceNotFoundException;
 import com.hr.erp.employee.entity.Employee;
+import com.hr.erp.employee.mapper.EmployeeNameMapper;
 import com.hr.erp.employee.model.EmployeeStatus;
 import com.hr.erp.employee.repository.EmployeeRepository;
 import com.hr.erp.leave.dto.request.CreateLeaveRequestDto;
@@ -30,6 +33,10 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +46,8 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     LeaveTypeRepository leaveTypeRepository;
     EmployeeRepository employeeRepository;
     LeaveRequestMapper leaveRequestMapper;
+    UserRepository userRepository;
+    EmployeeNameMapper employeeNameMapper;
 
     static ZoneId COMPANY_ZONE_ID = ZoneId.of("Asia/Baku");
 
@@ -48,7 +57,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
 
         Page<LeaveRequestEntity> leaveRequestEntities = leaveRequestRepository.findAllByStatus(status, pageable);
 
-        return leaveRequestEntities.map(leaveRequestMapper::mapEntityToResponse);
+        return toResponsePage(leaveRequestEntities);
     }
 
     @Override
@@ -61,7 +70,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
 
         Page<LeaveRequestEntity> leaveRequestEntities = leaveRequestRepository.findAllByEmployeeId(employeeId, pageable);
 
-        return leaveRequestEntities.map(leaveRequestMapper::mapEntityToResponse);
+        return toResponsePage(leaveRequestEntities);
     }
 
     @Override
@@ -69,7 +78,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         LeaveRequestEntity leaveRequestEntity = leaveRequestRepository.findById(leaveRequestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Leave record not found!"));
 
-        return leaveRequestMapper.mapEntityToResponse(leaveRequestEntity);
+        return toResponse(leaveRequestEntity);
     }
 
     @Override
@@ -118,7 +127,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
 
         LeaveRequestEntity savedLeaveEntity = leaveRequestRepository.save(leaveRequestEntity);
 
-        return leaveRequestMapper.mapEntityToResponse(savedLeaveEntity);
+        return toResponse(savedLeaveEntity);
     }
 
     @Override
@@ -142,7 +151,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
 
         LeaveRequestEntity savedLeaveEntity = leaveRequestRepository.save(leaveRequestEntity);
 
-        return leaveRequestMapper.mapEntityToResponse(savedLeaveEntity);
+        return toResponse(savedLeaveEntity);
     }
 
     @Override
@@ -165,7 +174,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
 
         LeaveRequestEntity savedLeaveEntity = leaveRequestRepository.save(leaveRequestEntity);
 
-        return leaveRequestMapper.mapEntityToResponse(savedLeaveEntity);
+        return toResponse(savedLeaveEntity);
     }
 
     @Override
@@ -188,6 +197,49 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
 
         LeaveRequestEntity savedLeaveEntity = leaveRequestRepository.save(leaveRequestEntity);
 
-        return leaveRequestMapper.mapEntityToResponse(savedLeaveEntity);
+        return toResponse(savedLeaveEntity);
+    }
+
+    private LeaveResponseDto toResponse(LeaveRequestEntity leaveRequestEntity) {
+        LeaveResponseDto dto = leaveRequestMapper.mapEntityToResponse(leaveRequestEntity);
+
+        if (Objects.isNull(dto.approvedById())) {
+            return dto;
+        }
+
+        return withApproverName(dto, resolveApproverNames(Set.of(dto.approvedById())));
+    }
+
+    // Resolves all approver names of a page with a single query (avoids N+1)
+    private Page<LeaveResponseDto> toResponsePage(Page<LeaveRequestEntity> leaveRequestEntities) {
+        Set<String> approverIds = leaveRequestEntities.getContent().stream()
+                .map(LeaveRequestEntity::getApprovedBy)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        Map<String, String> approverNames = resolveApproverNames(approverIds);
+
+        return leaveRequestEntities.map(entity ->
+                withApproverName(leaveRequestMapper.mapEntityToResponse(entity), approverNames));
+    }
+
+    private Map<String, String> resolveApproverNames(Set<String> approverIds) {
+        if (approverIds.isEmpty()) {
+            return Map.of();
+        }
+
+        return userRepository.findAllByIdIn(approverIds).stream()
+                .collect(Collectors.toMap(User::getId, user -> employeeNameMapper.toFullName(user.getEmployee())));
+    }
+
+    private LeaveResponseDto withApproverName(LeaveResponseDto dto, Map<String, String> approverNames) {
+        if (Objects.isNull(dto.approvedById())) {
+            return dto;
+        }
+
+        return new LeaveResponseDto(dto.id(), dto.employeeId(), dto.employeeFullName(), dto.leaveTypeId(),
+                dto.leaveTypeName(), dto.startDate(), dto.endDate(), dto.totalDays(), dto.status(),
+                dto.approvedById(), approverNames.get(dto.approvedById()), dto.reason(),
+                dto.createdAt(), dto.createdBy(), dto.updatedAt(), dto.updatedBy());
     }
 }

@@ -150,13 +150,23 @@ public class PayrollServiceImpl implements PayrollService {
     @Override
     @Transactional
     public void createDepartmentPayrolls(String departmentId, LocalDate periodStart, LocalDate periodEnd) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userId = !Objects.isNull(auth) ? auth.getName() : "SYSTEM";
+
         List<Employee> employees = employeeRepository.findAllByPositionDepartmentIdAndStatus(departmentId, EmployeeStatus.ACTIVE);
 
         List<Payroll> payrolls = employees.stream()
                 .filter(emp -> !payrollRepository.existsByEmployeeIdAndPeriodStartAndPeriodEnd(emp.getId(), periodStart, periodEnd))
-                .map(emp -> calculatePayroll(
-                        emp, periodStart, periodEnd, BigDecimal.ZERO, null, BigDecimal.ZERO, null
-                ))
+                .map(emp -> {
+                    Payroll payroll = calculatePayroll(
+                            emp, periodStart, periodEnd, BigDecimal.ZERO, null, BigDecimal.ZERO, null
+                    );
+
+                    payroll.setCreatedAt(Instant.now());
+                    payroll.setCreatedBy(userId);
+
+                    return payroll;
+                })
                 .toList();
 
         payrollRepository.saveAll(payrolls);

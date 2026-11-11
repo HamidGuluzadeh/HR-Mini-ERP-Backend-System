@@ -16,10 +16,18 @@ public interface PositionMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "department", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "updatedBy", ignore = true)
     Position mapRequestToEntity(PositionRequest request);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "department", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "updatedBy", ignore = true)
     void updateEntityFromRequest(PositionRequest request, @MappingTarget Position position);
 
 }

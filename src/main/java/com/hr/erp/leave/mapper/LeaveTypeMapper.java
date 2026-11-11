@@ -16,12 +16,16 @@ public interface LeaveTypeMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "updatedBy", ignore = true)
     LeaveTypeEntity mapRequestToEntity(CreateLeaveTypeRequestDto requestDto);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "updatedBy", ignore = true)
     void updateEntityFromRequest(UpdateLeaveTypeRequestDto requestDto, @MappingTarget LeaveTypeEntity leaveTypeEntity);
 
 }

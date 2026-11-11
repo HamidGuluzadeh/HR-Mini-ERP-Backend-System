@@ -19,11 +19,17 @@ public interface AttendanceMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "employee", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "updatedBy", ignore = true)
     Attendance mapRequestToEntity(AttendanceRequest request);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "employee", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "updatedBy", ignore = true)
     void updateEntityFromRequest(AttendanceRequest request, @MappingTarget Attendance attendance);
 
 }

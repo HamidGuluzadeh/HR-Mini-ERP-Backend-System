@@ -17,13 +17,17 @@ public interface DepartmentMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "parent", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "updatedBy", ignore = true)
     Department mapRequestToEntity(DepartmentRequest request);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "parent", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "updatedBy", ignore = true)
     void updateEntityFromRequest(DepartmentRequest request, @MappingTarget Department department);
 
 }
