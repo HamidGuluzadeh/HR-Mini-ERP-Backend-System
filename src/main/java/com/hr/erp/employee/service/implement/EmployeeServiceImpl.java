@@ -252,5 +252,12 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setUpdatedBy(userId);
 
         employeeRepository.save(employee);
+
+        contractRepository.findByEmployeeIdAndIsActiveTrue(employeeId)
+                .ifPresent(contract -> {
+                    contract.setIsActive(false);
+                    contract.setEffectiveTo(terminationDate);
+                    contractRepository.save(contract);
+                });
     }
 }

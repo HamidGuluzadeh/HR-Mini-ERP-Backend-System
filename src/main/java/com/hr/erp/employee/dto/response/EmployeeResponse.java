@@ -1,8 +1,10 @@
 package com.hr.erp.employee.dto.response;
 
 import com.hr.erp.employee.model.EmployeeStatus;
+import com.hr.erp.employee.model.SalaryType;
 import lombok.Builder;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 
@@ -21,6 +23,9 @@ public record EmployeeResponse(String id,
                                String managerFullName,
                                String bankName,
                                String iban,
+                               SalaryType salaryType,
+                               BigDecimal baseSalary,
+                               BigDecimal hourlyRate,
                                EmployeeStatus status,
                                Instant createdAt,
                                String createdBy,
